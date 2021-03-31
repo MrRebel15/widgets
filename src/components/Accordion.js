@@ -29,7 +29,7 @@ const Accordion = ({ items }) => {
   return (
     <div className="ui styled accordion">
       {RenderedItems}
-      <h1>{activeindex}</h1>
+      {/* <h1>{activeindex}</h1> */}
     </div>
   );
 };
