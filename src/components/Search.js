@@ -3,7 +3,18 @@ import axios from "axios";
 
 const Search = () => {
   const [term, setTerm] = useState("programming");
+  const [debouncedTerm, setDebouncedTerm] = useState(term);
   const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedTerm(term);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [term]);
 
   useEffect(() => {
     const search = async () => {
@@ -13,28 +24,16 @@ const Search = () => {
           list: "search",
           origin: "*",
           format: "json",
-          srsearch: term,
+          srsearch: debouncedTerm,
         },
       });
+
       setResults(data.query.search);
     };
+    search();
+  }, [debouncedTerm]);
 
-    if (term && !results.length) {
-      search();
-    } else {
-      const timeoutID = setTimeout(() => {
-        if (term) {
-          search();
-        }
-      }, 500);
-
-      return () => {
-        clearTimeout(timeoutID);
-      };
-    }
-  }, [term]);
-
-  const rendderedResults = results.map((result) => {
+  const renderedResults = results.map((result) => {
     return (
       <div key={result.pageid} className="item">
         <div className="right floated content">
@@ -42,7 +41,7 @@ const Search = () => {
             className="ui button"
             href={`https://en.wikipedia.org?curid=${result.pageid}`}
           >
-            GO
+            Go
           </a>
         </div>
         <div className="content">
@@ -59,13 +58,13 @@ const Search = () => {
         <div className="field">
           <label>Enter Search Term</label>
           <input
-            className="input"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
+            className="input"
           />
         </div>
       </div>
-      <div className="ui celled list">{rendderedResults}</div>
+      <div className="ui celled list">{renderedResults}</div>
     </div>
   );
 };
